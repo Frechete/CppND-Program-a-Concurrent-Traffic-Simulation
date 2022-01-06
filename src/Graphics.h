@@ -14,7 +14,7 @@ class Graphics {
   // getters / setters
   void setBgFilename(const std::string &filename) { _bgFilename = filename; }
   void setTrafficObjects(
-      std::vector<std::shared_ptr<TrafficObject>> const  &trafficObjects) {
+      std::vector<std::shared_ptr<TrafficObject>> const &trafficObjects) {
     _trafficObjects = trafficObjects;
   }
 
@@ -33,4 +33,4 @@ class Graphics {
   std::vector<cv::Mat> _images;
 };
 
-#endif // SRC_GRAPHICS_H_
+#endif  // SRC_GRAPHICS_H_

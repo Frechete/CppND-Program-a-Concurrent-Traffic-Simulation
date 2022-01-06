@@ -43,7 +43,7 @@ class Intersection : public TrafficObject {
   std::vector<std::shared_ptr<Street>> queryStreets(
       std::shared_ptr<Street>
           incoming);  // return pointer to current list of all outgoing streets
-  void simulate();
+  void simulate() override;
   void vehicleHasLeft(std::shared_ptr<Vehicle> vehicle);
   bool trafficLightIsGreen();
 
