@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <deque>
 #include <mutex>
+#include <utility>
 
 #include "TrafficObject.h"
 
@@ -20,7 +21,13 @@ class Vehicle;
 template <class T>
 class MessageQueue {
  public:
+  T receive();
+  void send(T &&msg);
+
  private:
+  std::deque<T> _queue;
+  std::condition_variable _condition;
+  std::mutex _mtx;
 };
 
 // Define a class „TrafficLight“ which is a child class of TrafficObject.
@@ -35,7 +42,7 @@ class TrafficLight : public TrafficObject {
  public:
   // constructor / desctructor
   TrafficLight();
-  ~TrafficLight();
+  //~TrafficLight();
   // getters / setters
   void waitForGreen();
   void simulate() override;
@@ -51,6 +58,7 @@ class TrafficLight : public TrafficObject {
   // TrafficLightPhase and use it within the infinite loop to push each new
   // TrafficLightPhase into it by calling send in conjunction with move
   // semantics.
+  MessageQueue<TrafficLightPhase> _messageQueue;
 
   std::condition_variable _condition;
   std::mutex _mutex;

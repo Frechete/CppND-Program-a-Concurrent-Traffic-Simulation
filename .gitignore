@@ -1,7 +1,7 @@
 
 .github/**
 build/*
-test.*
+traffic.*
 # Prerequisites
 *.d
 

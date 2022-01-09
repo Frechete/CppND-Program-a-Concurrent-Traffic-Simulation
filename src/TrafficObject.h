@@ -25,7 +25,7 @@ class TrafficObject {
   ObjectType getType() { return _type; }
 
   // typical behaviour methods
-  virtual void simulate(){};
+  virtual void simulate() {}
 
  protected:
   ObjectType _type;     // identifies the class type
