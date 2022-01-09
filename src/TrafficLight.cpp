@@ -3,20 +3,30 @@
 #include <iostream>
 #include <random>
 
+template <typename R>
+R _random(R range_from, R range_to) {
+  std::random_device rand_dev;
+  std::mt19937 generator(rand_dev());
+  std::uniform_int_distribution<R> distr(range_from, range_to);
+  return distr(generator);
+}
+
 /* Implementation of class "MessageQueue" */
 
 template <typename T>
 T MessageQueue<T>::receive() {
   std::unique_lock<std::mutex> lk(_mtx);
   _condition.wait(lk, [this] { return !_queue.empty(); });
-  return std::move(_queue.back());
+  T received(std::move(_queue.back()));
+  _queue.clear();
+  return received;
 }
 
 template <typename T>
 void MessageQueue<T>::send(T &&msg) {
   std::lock_guard<std::mutex> guard_lock(_mtx);
+  _queue.emplace_back(msg);
   _condition.notify_one();
-  _queue.push_back(msg);
 }
 
 /* Implementation of class "TrafficLight" */
@@ -38,23 +48,14 @@ void TrafficLight::simulate() {
 
 // virtual function which is executed in a thread
 void TrafficLight::cycleThroughPhases() {
-  // FP.2a : Implement the function with an infinite loop that measures the
-  // time between two loop cycles
-  // and toggles the current phase of the traffic light between red and green
-  // and sends an update method
-  // to the message queue using move semantics. The cycle duration
-  // should be a
-  //    random value between 4 and
-  // 6 seconds.
-  // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms
-  // between two cycles.
+  int randNum = _random<int>(4000, 6000);
   while (true) {
     // start time measurement
     std::chrono::high_resolution_clock::time_point t1 =
         std::chrono::high_resolution_clock::now();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    int randNum = rand() % (6000 - 4000 + 1) + 4000;
+    // int randNum = rand() % (6000 - 4000 + 1) + 4000;
     std::this_thread::sleep_for(std::chrono::milliseconds(randNum));
     _currentPhase = (_currentPhase == TrafficLightPhase::red)
                         ? TrafficLightPhase::green
@@ -65,7 +66,7 @@ void TrafficLight::cycleThroughPhases() {
         std::chrono::high_resolution_clock::now();
     auto duration =
         std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
-    // std::cout << "Semaphore toggled after " << duration << " microseconds"
-    //          << std::endl;
+    std::cout << "Semaphore toggled after " << (duration / 1000)
+              << " milliseconds" << std::endl;
   }
 }
